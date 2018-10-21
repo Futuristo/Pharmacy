@@ -108,6 +108,11 @@ class medicine
 		{
 			cout<<K<<"\t\t"<<name<<"\t\t"<<quantity<<"\t\t"<<u_price<<endl;
 		}
+		float rPrice()
+		{
+			return u_price;
+		}
+		
 		
 		
 } med;
@@ -132,6 +137,7 @@ void medicine::countMed() //counts list items
 void showMed()
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
+	f.seekg(0, ios::beg);
 	
 	cout<<"\nLIST OF MEDICINES IN STOCK"<<endl;
 	cout<<"S.no\t\tNAME\t\tQUANTITY\tPRICE(INR)\n";
@@ -141,7 +147,6 @@ void showMed()
 		med.showDetails();	
 	}
 	f.close();
-	menuV();
 }
 
 void remMed()
@@ -153,17 +158,39 @@ void sellMed()
 {
 	showMed(); //shows list of all medicines from Medicines.dat
 	
-	//input-select a medicine using K
-	//input quantity
+	//select medicine using K, take input of quantity, show Cost, confirm
+	int k, q, c;
+	cout<<endl<<"Enter Medicine Serial Number: ";
+	pinput(k, 100, 1); //upper limit to be CHANGED to s.no. of last list item
+	cout<<"Enter Quantity of Item: ";
+	pinput(q, 100, 1); //upper limit to be CHANGED to quantity of list item
 	
-	//show price to pay
-	//confirm
+	f.open("Medicines.dat", ios::in | ios::binary);
+	f.seekg((k-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
+	f.read((char*) &med, sizeof(medicine));
+	
+	cout<<endl<<"Cost (INR): "<<q*med.rPrice();
+	
+	cout<<"\nConfirm? Yes(1) / No(0): ";
+	pinput(c, 1, 0);
+	if(!c)
+	{
+		f.close();
+		sellMed();
+		return;
+	}
+	
+	f.close();
 	
 	//open Medicines.dat
 	//searh for MID
 	//modify quantity | if quantity = total quantity => remove med from list | DO WITH remMed()
+	//if things go good, show confirm message
 
-
+}
+int getInt()
+{
+	
 }
 void addMed()
 {
@@ -200,10 +227,18 @@ void menu()
 	
 	
 	//execute
-	if(choice==1) sellMed();
+	if(choice==1)
+	{
+		sellMed();
+		menuV();
+	}
 	else if(choice==2) addMed();
 //	else if(choice==3) remMed();
-	else if (choice==4) showMed();
+	else if (choice==4) //show medicine list
+	{
+		showMed();
+		menuV();
+	}
 }
 
 
@@ -217,4 +252,5 @@ int main()
 	//getchar(); //for pause before termination
 	return 0;
 }
+
 
