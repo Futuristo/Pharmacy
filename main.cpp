@@ -12,6 +12,7 @@ fstream f;
 //global function prototypes
 void menu();
 void menuV();
+int countMed();
 
 //global var
 int choice;
@@ -66,13 +67,13 @@ class medicine
 //	int exp_y;
 	
 	public:
-		void countMed();
 		void getDetails()
 		{
 			
 			cout<<endl<<"Enter details about medicine: "<<endl;
 
-			countMed(); //assigns K value | calling this function after input of other variables does something fishy
+			K = countMed(); //assigns K value | calling this function after input of other variables does something fishy
+			
 			cout<<"Enter Name: ";
 			gets(name);
 			
@@ -108,7 +109,7 @@ class medicine
 		{
 			cout<<K<<"\t\t"<<name<<"\t\t"<<quantity<<"\t\t"<<u_price<<endl;
 		}
-		float rPrice()
+		float rPrice() //accessor function
 		{
 			return u_price;
 		}
@@ -117,20 +118,20 @@ class medicine
 		
 } med;
 
-void medicine::countMed() //counts list items
+int countMed() //counts list items
 		{
-			K=0;
+			int k=0;
 			f.open("Medicines.dat", ios::in | ios::binary);
 			
 			
 			while(f.read((char*) &med, sizeof(medicine)))
 			{
-				K++;	
+				k++;	
 			}
 			f.close();
+			k++;
 			
-			//for first entry
-			if(K==0) K++;
+			return k;
 		}
 
 //global funcitons
@@ -161,7 +162,7 @@ void sellMed()
 	//select medicine using K, take input of quantity, show Cost, confirm
 	int k, q, c;
 	cout<<endl<<"Enter Medicine Serial Number: ";
-	pinput(k, 100, 1); //upper limit to be CHANGED to s.no. of last list item
+	pinput(k, countMed()-1, 1); 
 	cout<<"Enter Quantity of Item: ";
 	pinput(q, 100, 1); //upper limit to be CHANGED to quantity of list item
 	
