@@ -16,7 +16,6 @@
   - `private int e_y` : Year of Expiry
 
 - #### Member Functions
-  - `public void countMed()` :
   - `public void getDetails()` :
   - `public void showDetails()` :
   - `public int rPrice()` :
