@@ -67,6 +67,7 @@ class medicine
 //	int exp_y;
 	
 	public:
+		
 		void getDetails()
 		{
 			
@@ -113,28 +114,29 @@ class medicine
 		{
 			return u_price;
 		}
-		
-		
-		
+		int rQuantity() //accesor function
+		{
+			return quantity;
+		}
 } med;
 
-int countMed() //counts list items
-		{
-			int k=0;
-			f.open("Medicines.dat", ios::in | ios::binary);
-			
-			
-			while(f.read((char*) &med, sizeof(medicine)))
-			{
-				k++;	
-			}
-			f.close();
-			k++;
-			
-			return k;
-		}
 
 //global funcitons
+int countMed() //counts list items
+{
+	int k=0;
+	f.open("Medicines.dat", ios::in | ios::binary);
+			
+	while(f.read((char*) &med, sizeof(medicine)))
+	{
+		k++;	
+	}
+	f.close();
+	k++;
+			
+	return k;
+}
+
 void showMed()
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -160,17 +162,18 @@ void sellMed()
 	showMed(); //shows list of all medicines from Medicines.dat
 	
 	//select medicine using K, take input of quantity, show Cost, confirm
-	int k, q, c;
+	int sellK, sellQ, c;
 	cout<<endl<<"Enter Medicine Serial Number: ";
-	pinput(k, countMed()-1, 1); 
-	cout<<"Enter Quantity of Item: ";
-	pinput(q, 100, 1); //upper limit to be CHANGED to quantity of list item
+	pinput(sellK, countMed()-1, 1); 
 	
 	f.open("Medicines.dat", ios::in | ios::binary);
-	f.seekg((k-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
+	f.seekg((sellK-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
 	f.read((char*) &med, sizeof(medicine));
 	
-	cout<<endl<<"Cost (INR): "<<q*med.rPrice();
+	cout<<"Enter Quantity of Item: ";
+	pinput(sellQ, med.rQuantity(), 1); //upper limit to be CHANGED to quantity of list item
+	
+	cout<<endl<<"Cost (INR): "<<sellQ*med.rPrice();
 	
 	cout<<"\nConfirm? Yes(1) / No(0): ";
 	pinput(c, 1, 0);
@@ -180,6 +183,8 @@ void sellMed()
 		sellMed();
 		return;
 	}
+	
+	
 	
 	f.close();
 	
