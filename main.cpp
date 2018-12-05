@@ -8,6 +8,7 @@ using namespace std; //Otherwise use std::cout etc.
 
 //file streams
 fstream f;
+fstream t;
 
 //global function prototypes
 void menu();
@@ -43,7 +44,7 @@ void pfinput(float &v,float u, float l) //u: upper limit, l: lower limit, both i
 			cin.ignore(1,'\n'); //empties input buffer
 		}
 		
-//classes
+//CLASSES
 class medicine
 {
 	int K;
@@ -118,10 +119,14 @@ class medicine
 		{
 			return quantity;
 		}
+		int rK() //accessor functino
+		{
+			return K;
+		}
 } med;
 
 
-//global funcitons
+//GLOBAL FUNCTIONS
 int countMed() //counts list items
 {
 	int k=0;
@@ -132,8 +137,7 @@ int countMed() //counts list items
 		k++;	
 	}
 	f.close();
-	k++;
-			
+	k++; //do not remove this, this is for addition of first medicine		
 	return k;
 }
 
@@ -152,9 +156,47 @@ void showMed()
 	f.close();
 }
 
+void delMed(int remK) //assumes paramter input is already verified
+{
+	f.open("Medicines.dat", ios::in | ios::binary);
+	f.seekg(0, ios::beg);
+	t.open("temp.dat", ios::out | ios::binary);
+	
+	while(f.read((char*) &med, sizeof(medicine)))
+	{
+		if(med.rK()!=remK)	
+		{
+			t.write((char* ) &med, sizeof(medicine));
+		}
+	}
+	f.close();
+	t.close();
+	
+	remove("Medicines.dat");
+	rename("temp.dat", "Medicines.dat");
+	
+}
+
 void remMed()
 {
+	showMed(); //shows list of all medicines from Medicines.dat
 	
+	//select medicine using K, confirm
+	int remK, c;
+	cout<<endl<<"Enter Medicine Serial Number to remove: ";
+	pinput(remK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+	
+	cout<<"\nConfirm? Yes(1) / No:-Change Choice(0): ";
+	pinput(c, 1, 0);
+	if(!c)
+	{
+		remMed();
+		return;
+	}
+	
+	delMed(remK);
+	
+	menuV();
 }
 
 void sellMed()
@@ -164,14 +206,14 @@ void sellMed()
 	//select medicine using K, take input of quantity, show Cost, confirm
 	int sellK, sellQ, c;
 	cout<<endl<<"Enter Medicine Serial Number: ";
-	pinput(sellK, countMed()-1, 1); 
+	pinput(sellK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
 	
 	f.open("Medicines.dat", ios::in | ios::binary);
 	f.seekg((sellK-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
 	f.read((char*) &med, sizeof(medicine));
 	
 	cout<<"Enter Quantity of Item: ";
-	pinput(sellQ, med.rQuantity(), 1); //upper limit to be CHANGED to quantity of list item
+	pinput(sellQ, med.rQuantity(), 1);
 	
 	cout<<endl<<"Cost (INR): "<<sellQ*med.rPrice();
 	
@@ -183,16 +225,14 @@ void sellMed()
 		sellMed();
 		return;
 	}
-	
-	
-	
 	f.close();
 	
 	//open Medicines.dat
-	//searh for MID
+	//search for K (id of medicine)
 	//modify quantity | if quantity = total quantity => remove med from list | DO WITH remMed()
 	//if things go good, show confirm message
-
+	
+	menuV();
 }
 int getInt()
 {
@@ -209,7 +249,7 @@ void addMed()
 }
 
 
-
+//MENU FUNCTIONS
 void menuV()
 {
 	int c;
@@ -217,8 +257,6 @@ void menuV()
 	pinput(c, 1, 0);
 	if(c) menu();
 }
-
-
 void menu()
 {
 	
@@ -233,17 +271,14 @@ void menu()
 	
 	
 	//execute
-	if(choice==1)
-	{
-		sellMed();
-		menuV();
-	}
+	if(choice==1) sellMed();
 	else if(choice==2) addMed();
-//	else if(choice==3) remMed();
+	else if(choice==3) remMed();
 	else if (choice==4) //show medicine list
 	{
 		showMed();
-		menuV();
+		menuV(); //because showMed() can be called by other functions
+				//and menu cannot be shown everytime it is called
 	}
 }
 
@@ -255,7 +290,7 @@ int main()
 	
 	cout<<"\nThank You For Using Pharmacy Manager\nPress Any Key to Exit...";
 	
-	//getchar(); //for pause before termination
+	getchar(); //for pause before termination
 	return 0;
 }
 
