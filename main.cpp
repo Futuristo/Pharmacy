@@ -127,6 +127,10 @@ class medicine
 		{
 			K = newK;
 		}
+		void decQuantity(int dQ)
+		{
+			quantity-= dQ;
+		}
 } med;
 
 
@@ -257,12 +261,56 @@ void sellMed()
 		sellMed();
 		return;
 	}
-	f.close();
 	
-	//open Medicines.dat
-	//search for K (id of medicine)
-	//modify quantity | if quantity = total quantity => remove med from list | DO WITH remMed()
-	//if things go good, show confirm message
+	if(sellQ == med.rQuantity())
+	{
+		c = sellK;
+		f.close();
+		delMed(c);
+		
+		f.open("Medicines.dat", ios::in | ios::out | ios::binary);
+		f.seekg(0, ios::beg);
+		int pos;
+		c=1;
+		for(;;)
+		{
+			pos = f.tellg();
+			if(f.read((char*) &med, sizeof(medicine)))
+			{
+				med.changeK(c);
+			
+				f.seekg(pos);
+				f.write((char*) &med, sizeof(medicine));
+			
+				f.seekg(pos+sizeof(medicine));
+				c++;
+				continue;
+			}
+			else
+			{
+				break;
+			}
+		}
+		f.close();
+	}
+	else
+	{
+		f.open("Medicines.dat", ios::in | ios::out | ios::binary);
+		f.seekg((sellK-1)*sizeof(med), ios::beg);
+		f.read((char*) &med, sizeof(medicine));
+		
+		med.decQuantity(sellQ);
+		f.close();
+		//BUG
+		f.open("Medicines.dat", ios::in | ios::out | ios::binary);
+		f.seekg((sellK-1)*sizeof(medicine), ios::beg);
+		f.write((char*) &med, sizeof(medicine));
+		f.close();
+		
+	}
+	
+	showMed();
+	cout<<"\nTransaction Complete";
 	
 	menuV();
 }
@@ -285,7 +333,7 @@ void addMed()
 void menuV()
 {
 	int c;
-	cout<<"\nShow Menu? Yes(1) / No(0): ";
+	cout<<"\nShow Menu? Yes(1) / Exit(0): ";
 	pinput(c, 1, 0);
 	if(c) menu();
 }
@@ -318,6 +366,7 @@ void menu()
 int main()
 {
 	cout<<"Welcome to Pharmacy Manager"<<endl;
+
 	menu();
 	
 	cout<<"\nThank You For Using Pharmacy Manager\nPress Any Key to Exit...";
