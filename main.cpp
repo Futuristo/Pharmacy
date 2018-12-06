@@ -161,7 +161,7 @@ int nameID(char medN[20])
 		return 0;
 	}
 }
-int countMed() //counts list items
+int countMed() //returns total list items + 1
 {
 	int k=0;
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -174,7 +174,31 @@ int countMed() //counts list items
 	k++; //do not remove this, this is for addition of first medicine		
 	return k;
 }
-void showMed()
+float countWorth() //returns total worth of stock
+{
+	float w=0;
+	f.open("Medicines.dat", ios::in | ios::binary);
+	
+	while(f.read((char*) &med, sizeof(medicine)))
+	{
+		w+=med.rQuantity*med.rPrice();
+	}
+	f.close();
+	return w;
+}
+int countQuantity() //returns total stock quantity
+{
+	int q=0;
+	f.open("Medicines.dat", ios::in | ios::binary);
+
+	while(f.read((char*) &med, sizeof(medicine)))
+	{
+		q+=med.rQuantity();
+	}
+	f.close();
+	return q;
+}
+void showMed() //shows all medicine in list
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
 	f.seekg(0, ios::beg);
@@ -188,7 +212,7 @@ void showMed()
 	}
 	f.close();
 }
-void delMed(int remK) //assumes paramter input is already verified
+void delMed(int remK) //Removes Entry List using Med Serial No.(assumes paramter input is already verified)
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
 	f.seekg(0, ios::beg);
@@ -209,9 +233,7 @@ void delMed(int remK) //assumes paramter input is already verified
 }
 void remMed()
 {
-	showMed(); //shows list of all medicines from Medicines.dat
-	
-	//select medicine using K, confirm
+	showMed();
 	int remK=0, c;
 	char medN[20];
 	
@@ -233,7 +255,7 @@ void remMed()
 		pinput(remK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
 	}
 	
-	
+	//confirm
 	cout<<"\nConfirm? Yes(1) / No:-Change Choice(0): ";
 	pinput(c, 1, 0);
 	if(!c)
@@ -277,9 +299,7 @@ void remMed()
 }
 void sellMed()
 {
-	showMed(); //shows list of all medicines from Medicines.dat
-	
-	//select medicine using K, take input of quantity, show Cost, confirm
+	showMed();
 	int sellK=0, sellQ, c;
 	char medN[20];
 
@@ -301,18 +321,20 @@ void sellMed()
 		pinput(sellK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
 	}
 	
+	//Show list item and price
 	f.open("Medicines.dat", ios::in | ios::binary);
 	f.seekg((sellK-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
 	f.read((char*) &med, sizeof(medicine));
 	
 	cout<<"\nMedicine Found\n";
-			cout<<"S.no\t\tNAME\t\tQUANTITY\tPRICE(INR)\n";
-			med.showDetails();
+	cout<<"S.no\t\tNAME\t\tQUANTITY\tPRICE(INR)\n";
+	med.showDetails();
+	
 	cout<<"Enter Quantity of Item: ";
 	pinput(sellQ, med.rQuantity(), 1);
-	
 	cout<<endl<<"Cost (INR): "<<sellQ*med.rPrice();
 	
+	//confirm
 	cout<<"\nConfirm? Yes(1) / No(0): ";
 	pinput(c, 1, 0);
 	if(!c)
@@ -363,7 +385,7 @@ void sellMed()
 		med.decQuantity(sellQ);
 		f.close();
 		//BUG
-		f.open("Medicines.dat", ios::in | ios::out | ios::binary);
+		f.open("Medicines.dat", ios::out | ios::binary);
 		f.seekg((sellK-1)*sizeof(medicine), ios::beg);
 		f.write((char*) &med, sizeof(medicine));
 		f.close();
@@ -375,7 +397,7 @@ void sellMed()
 
 	menuV();
 }
-void addMed()
+void addMed() //addition
 {
 	med.getDetails();
 	f.open("Medicines.dat", ios::app | ios::in | ios::binary);
@@ -384,7 +406,7 @@ void addMed()
 	
 	menuV();
 }
-void searchMed()
+void searchMed() //search by name
 {
 	char medN[20];
 	int flag=1;
@@ -410,7 +432,12 @@ void searchMed()
 	
 	menuV();
 }
-
+void ovMed() //full overview
+{
+	cout<<"\nOVERVIEW:\n";
+	cout<<"TOTAL ITEMS\t\tTOTAL WORTH\t\tTOTAL STOCK\n";
+	cout<<countMed()-1<<"\t\t\t"<<countWorth()<<"\t\t\t"<<countQuantity()<<endl;
+}
 
 //MENU FUNCTIONS
 void menuV()
@@ -422,39 +449,31 @@ void menuV()
 }
 void menu()
 {
-	
 	cout<<endl<<"Menu"<<endl;
-	
 	//view choices
-	cout<<"1. Sell\n"<<"2. Add\n"<<"3. Remove\n"<<"4. Search\n"<<"5. View\n";
-
+	cout<<"1. Sell\n"<<"2. Add\n"<<"3. Remove\n"<<"4. Search\n"<<"5. Overview\n";
 	//select choice
 	cout<<endl<<"Enter Your Choice: ";
 	pinput(choice, 5, 1);
-	
-	
 	//execute
 	if(choice==1) sellMed();
 	else if(choice==2) addMed();
 	else if(choice==3) remMed();
 	else if(choice==4) searchMed();
-	else if (choice==5) //show medicine list
+	else if(choice==5) //show medicine list
 	{
+		ovMed();
 		showMed();
 		menuV(); //because showMed() can be called by other functions
 				//and menu cannot be shown everytime it is called
 	}
 }
 
-
 int main()
 {
 	cout<<"Welcome to Pharmacy Manager"<<endl;
-
 	menu();
-	
 	cout<<"\nThank You For Using Pharmacy Manager\nPress Any Key to Exit...";
-	
 	getchar(); //for pause before termination
 	return 0;
 }
