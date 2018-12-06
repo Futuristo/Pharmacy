@@ -123,6 +123,10 @@ class medicine
 		{
 			return K;
 		}
+		void changeK(int newK)
+		{
+			K = newK;
+		}
 } med;
 
 
@@ -174,7 +178,6 @@ void delMed(int remK) //assumes paramter input is already verified
 	
 	remove("Medicines.dat");
 	rename("temp.dat", "Medicines.dat");
-	
 }
 
 void remMed()
@@ -195,6 +198,35 @@ void remMed()
 	}
 	
 	delMed(remK);
+	
+	//to correct the Medicine serial number values MODIFY
+	f.open("Medicines.dat", ios::in | ios::out | ios::binary);
+	f.seekg(0, ios::beg);
+	int pos;
+	c=1;
+	for(;;)
+	{
+		pos = f.tellg();
+		if(f.read((char*) &med, sizeof(medicine)))
+		{
+			med.changeK(c);
+			
+			f.seekg(pos);
+			f.write((char*) &med, sizeof(medicine));
+			
+			f.seekg(pos+sizeof(medicine));
+			c++;
+			continue;
+		}
+		else
+		{
+			break;
+		}
+	}
+	f.close();
+	
+	showMed();
+	cout<<"\nMedicine Removed from List";
 	
 	menuV();
 }
