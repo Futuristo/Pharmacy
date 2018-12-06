@@ -140,6 +140,27 @@ class medicine
 
 
 //GLOBAL FUNCTIONS
+int nameID(char medN[20])
+{	
+	int medK,flag=1;
+	f.open("Medicines.dat", ios::in | ios::binary);
+	while(f.read((char*) &med, sizeof(medicine)))
+	{
+		if(!strcmp(medN, med.rName()))
+		{
+			flag=0;
+			medK = med.rK();
+			f.close();
+			return medK;
+		}
+	}
+	if(flag)
+	{
+		f.close();
+		cout<<"\nMedicine Not Found";
+		return 0;
+	}
+}
 int countMed() //counts list items
 {
 	int k=0;
@@ -191,9 +212,27 @@ void remMed()
 	showMed(); //shows list of all medicines from Medicines.dat
 	
 	//select medicine using K, confirm
-	int remK, c;
-	cout<<endl<<"Enter Medicine Serial Number to remove: ";
-	pinput(remK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+	int remK=0, c;
+	char medN[20];
+	
+	//Name-ID Options
+	cout<<endl<<"Select Medicine using: "<<"\n1. Serial Number"<<"\n2. Name"<<"\nChoice: ";
+	pinput(choice, 2, 1);
+	if(choice==2)
+	{
+		while(!remK)
+		{
+			cout<<endl<<"Enter Medicine Name to remove: ";
+			gets(medN);
+			remK = nameID(medN);
+		}
+	}
+	else
+	{
+		cout<<endl<<"Enter Medicine Serial Number to remove: ";
+		pinput(remK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+	}
+	
 	
 	cout<<"\nConfirm? Yes(1) / No:-Change Choice(0): ";
 	pinput(c, 1, 0);
@@ -241,14 +280,34 @@ void sellMed()
 	showMed(); //shows list of all medicines from Medicines.dat
 	
 	//select medicine using K, take input of quantity, show Cost, confirm
-	int sellK, sellQ, c;
-	cout<<endl<<"Enter Medicine Serial Number: ";
-	pinput(sellK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+	int sellK=0, sellQ, c;
+	char medN[20];
+
+	//Name-ID Option
+	cout<<endl<<"Select Medicine using: "<<"\n1. Serial Number"<<"\n2. Name"<<"\nChoice: ";
+	pinput(choice, 2, 1);
+	if(choice==2)
+	{
+		while(!sellK)
+		{
+			cout<<endl<<"Enter Medicine Name to sell: ";
+			gets(medN);
+			sellK = nameID(medN);
+		}
+	}
+	else
+	{
+		cout<<endl<<"Enter Medicine Serial Number to sell: ";
+		pinput(sellK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+	}
 	
 	f.open("Medicines.dat", ios::in | ios::binary);
 	f.seekg((sellK-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
 	f.read((char*) &med, sizeof(medicine));
 	
+	cout<<"\nMedicine Found\n";
+			cout<<"S.no\t\tNAME\t\tQUANTITY\tPRICE(INR)\n";
+			med.showDetails();
 	cout<<"Enter Quantity of Item: ";
 	pinput(sellQ, med.rQuantity(), 1);
 	
@@ -263,6 +322,7 @@ void sellMed()
 		return;
 	}
 	
+	//change-quantity-in-file
 	if(sellQ == med.rQuantity())
 	{
 		c = sellK;
