@@ -2,6 +2,7 @@
 #include <iostream>
 #include <fstream>
 //#include <stdlib.h>
+#include <string.h>
 #include <ctime>
 
 using namespace std; //Otherwise use std::cout etc.
@@ -131,6 +132,10 @@ class medicine
 		{
 			quantity-= dQ;
 		}
+		char* rName()
+		{
+			return name;
+		}
 } med;
 
 
@@ -148,7 +153,6 @@ int countMed() //counts list items
 	k++; //do not remove this, this is for addition of first medicine		
 	return k;
 }
-
 void showMed()
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -163,7 +167,6 @@ void showMed()
 	}
 	f.close();
 }
-
 void delMed(int remK) //assumes paramter input is already verified
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -183,7 +186,6 @@ void delMed(int remK) //assumes paramter input is already verified
 	remove("Medicines.dat");
 	rename("temp.dat", "Medicines.dat");
 }
-
 void remMed()
 {
 	showMed(); //shows list of all medicines from Medicines.dat
@@ -234,7 +236,6 @@ void remMed()
 	
 	menuV();
 }
-
 void sellMed()
 {
 	showMed(); //shows list of all medicines from Medicines.dat
@@ -311,18 +312,40 @@ void sellMed()
 	
 	showMed();
 	cout<<"\nTransaction Complete";
-	
+
 	menuV();
-}
-int getInt()
-{
-	
 }
 void addMed()
 {
 	med.getDetails();
 	f.open("Medicines.dat", ios::app | ios::in | ios::binary);
 	f.write((char* ) &med, sizeof(medicine));
+	f.close();
+	
+	menuV();
+}
+void searchMed()
+{
+	char medN[20];
+	int flag=1;
+	cout<<"Enter name of Medicine to Seach: ";
+	gets(medN);
+	
+	f.open("Medicines.dat", ios::in | ios::binary);
+	while(f.read((char*) &med, sizeof(medicine)))
+	{
+		if(!strcmp(medN, med.rName()))
+		{
+			flag=0;
+			cout<<"\nMedicine Found\n";
+			cout<<"S.no\t\tNAME\t\tQUANTITY\tPRICE(INR)\n";
+			med.showDetails();
+		}
+	}
+	if(flag)
+	{
+		cout<<"\nMedicine NOT Found\n";
+	}
 	f.close();
 	
 	menuV();
@@ -343,18 +366,19 @@ void menu()
 	cout<<endl<<"Menu"<<endl;
 	
 	//view choices
-	cout<<"1. Sell\n"<<"2. Add\n"<<"3. Remove\n"<<"4. View\n";
+	cout<<"1. Sell\n"<<"2. Add\n"<<"3. Remove\n"<<"4. Search\n"<<"5. View\n";
 
 	//select choice
 	cout<<endl<<"Enter Your Choice: ";
-	pinput(choice, 4, 1);
+	pinput(choice, 5, 1);
 	
 	
 	//execute
 	if(choice==1) sellMed();
 	else if(choice==2) addMed();
 	else if(choice==3) remMed();
-	else if (choice==4) //show medicine list
+	else if(choice==4) searchMed();
+	else if (choice==5) //show medicine list
 	{
 		showMed();
 		menuV(); //because showMed() can be called by other functions
