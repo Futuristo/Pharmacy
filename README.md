@@ -18,7 +18,29 @@
 - #### Member Functions
   - `public void getDetails()` :
   - `public void showDetails()` :
-  - `public int rPrice()` :
+  - `public float rPrice()` :
+  - `public int rQuantity()` :
+  - `public int rK()` :
+  - `public void changeK(int newK)` :
+  - `public void decQuantity(int dQ)` :
+  
+### Global Variables
+- `fstream f` :
+- `fstream t` :
+- `int choice` :
+- `medicine med` :
+
+### Global Functions
+- `void menu()` :
+- `void menuV()` :
+- `int countMed()` :
+- `void pinput(int &v,int u, int l)` :
+- `void pfinput(float &v,float u, float l)` :
+- `void showMed()` :
+- `void delMed(int remK)` :
+- `void remMed()` :
+- `void sellMed()` :
+- `void addMed()` :
 
 
 ## Info
