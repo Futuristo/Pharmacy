@@ -1,13 +1,9 @@
-//using compiler config TDM GCC 4.9.2 Release (C++11)
 #include <iostream>
 #include <fstream>
-//#include <stdlib.h>
 #include <string.h>
-#include <ctime>
 
-using namespace std; //Otherwise use std::cout etc.
+using namespace std;
 
-//file streams
 fstream f;
 fstream t;
 
@@ -18,103 +14,64 @@ int countMed();
 
 //global var
 int choice;
-float bal;
 
-//char ibuf[100];
-
-//global utility functions
-void pinput(int &v,int u, int l) //u: upper limit, l: lower limit, both inclusive
-		{
-			while((!(cin>>v)) || v<l || v>u)
-			{
-				cout<<"Enter Correct Value: ";
-				cin.clear(); //https://stackoverflow.com/questions/5131647/why-would-we-call-cin-clear-and-cin-ignore-after-reading-input
-				cin.ignore(100,'\n');
-			}
-			cin.ignore(1,'\n'); //empties input buffer
-		}
-void pfinput(float &v,float u, float l) //u: upper limit, l: lower limit, both inclusive
-		{
-			while((!(cin>>v)) || v<l || v>u)
-			{
-				cout<<"Enter Correct Value: ";
-				cin.clear(); //https://stackoverflow.com/questions/5131647/why-would-we-call-cin-clear-and-cin-ignore-after-reading-input
-				cin.ignore(100,'\n');
-			}
-			cin.ignore(1,'\n'); //empties input buffer
-		}
+//functions for conditional input
+void pinput(int &v,int u, int l)
+{
+ while((!(cin>>v)) || v<l || v>u)
+	{
+		cout<<"Enter Correct Value: ";
+		cin.clear();
+		cin.ignore(100,'\n');
+	}
+	cin.ignore(1,'\n');
+}
+void pfinput(float &v,float u, float l)
+{
+ while((!(cin>>v)) || v<l || v>u)
+	{
+	cout<<"Enter Correct Value: ";
+	cin.clear();
+	cin.ignore(100,'\n');
+	}
+	cin.ignore(1,'\n');
+}
 
 //CLASSES
 class medicine
 {
 	int K;
 	char name[20];
-
 	int quantity;
 	float u_price;
-	//float t_price;
-
-	//mfg
-	//int m_d;
-	int m_m;
-	int m_y;
-
-	//exp
-	//int e_d;
-	int e_m;
-	int e_y;
-
-//	int exp_m;
-//	int exp_y;
-
+	
 	public:
 
 		void getDetails()
 		{
 			cout<<endl<<"Enter details about medicine: "<<endl;
 
-			K = countMed(); //assigns K value | calling this function after input of other variables does something fishy
+			K = countMed();
 			cout<<"Enter Name: ";
 			gets(name);
 			cout<<"Enter Quantity(in units): ";
 			pinput(quantity, 100, 1);
 			cout<<"Enter Price of 1 unit(INR): ";
 			pfinput(u_price, 10000, 1);
-
-//			cout<<endl<<"Enter Manufacturing Date: "<<endl;
-//			cout<<"Month: ";
-//			pinput(m_m, 12, 1);
-//			cout<<"Year: ";
-//			pinput(m_y, 2018, 2014);
-//
-//			cout<<endl<<"Enter Expiry Date: "<<endl;
-//			cout<<"Month: ";
-//			pinput(e_m, 12, 1);
-//			cout<<"Year: ";
-//			pinput(e_y, 2030, m_y+1);
-
-			//calculated data
-//			t_price=quantity*u_price;
-//			exp_m = (e_m + (12*(e_y-m_y)))-m_m; //difference in terms of months
-//			exp_y = exp_m/12;
-//			exp_m%=12;
-
-			//INPUT BUFFER PROBLEM IF INPUT EXCEEDS ONE CHARACTER | RESOLVED WITH GETS() IN LINE 55
-			//gets(ibuf); //to empty input buffer | XII Vol.1 Pg-311
 		}
 		void showDetails()
 		{
 			cout<<K<<"\t\t"<<name<<"\t\t"<<quantity<<"\t\t"<<u_price<<endl;
 		}
-		float rPrice() //accessor function
+		float rPrice()
 		{
 			return u_price;
 		}
-		int rQuantity() //accessor function
+		int rQuantity()
 		{
 			return quantity;
 		}
-		int rK() //accessor function
+		int rK()
 		{
 			return K;
 		}
@@ -134,7 +91,7 @@ class medicine
 
 
 //GLOBAL FUNCTIONS
-int nameID(char medN[20]) //returns K if found, else 0
+int nameID(char medN[20])
 {
 	int medK,flag=1;
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -155,7 +112,7 @@ int nameID(char medN[20]) //returns K if found, else 0
 		return 0;
 	}
 }
-int countMed() //returns total list items + 1
+int countMed()
 {
 	int k=0;
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -164,10 +121,10 @@ int countMed() //returns total list items + 1
 		k++;
 	}
 	f.close();
-	k++; //do not remove this, this is for addition of first medicine
+	k++;
 	return k;
 }
-float countWorth() //returns total worth of stock
+float countWorth()
 {
 	float w=0;
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -178,7 +135,7 @@ float countWorth() //returns total worth of stock
 	f.close();
 	return w;
 }
-int countQuantity() //returns total stock quantity
+int countQuantity()
 {
 	int q=0;
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -189,7 +146,7 @@ int countQuantity() //returns total stock quantity
 	f.close();
 	return q;
 }
-void showMed() //shows all medicine in list
+void showMed()
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
 
@@ -202,7 +159,7 @@ void showMed() //shows all medicine in list
 	}
 	f.close();
 }
-void delMed(int remK) //Removes Entry List using Med Serial No.(assumes paramter input is already verified)
+void delMed(int remK)
 {
 	f.open("Medicines.dat", ios::in | ios::binary);
 	t.open("temp.dat", ios::out | ios::binary);
@@ -225,7 +182,6 @@ void remMed()
 	int remK=0, c;
 	char medN[20];
 
-	//Name-ID Options
 	cout<<endl<<"Select Medicine using: "<<"\n1. Serial Number"<<"\n2. Name"<<"\nChoice: ";
 	pinput(choice, 2, 1);
 	if(choice==2)
@@ -240,10 +196,9 @@ void remMed()
 	else
 	{
 		cout<<endl<<"Enter Medicine Serial Number to remove: ";
-		pinput(remK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+		pinput(remK, countMed()-1, 1);
 	}
-
-	//confirm
+	
 	cout<<"\nConfirm? Yes(1) / No:-Change Choice(0): ";
 	pinput(c, 1, 0);
 	if(!c)
@@ -254,7 +209,6 @@ void remMed()
 
 	delMed(remK);
 
-	//to correct the Medicine serial number values MODIFY
 	f.open("Medicines.dat", ios::in | ios::out | ios::binary);
 	f.seekg(0, ios::beg);
 	int pos;
@@ -291,7 +245,6 @@ void sellMed()
 	int sellK=0, sellQ, c;
 	char medN[20];
 
-	//Name-ID Option
 	cout<<endl<<"Select Medicine using: "<<"\n1. Serial Number"<<"\n2. Name"<<"\nChoice: ";
 	pinput(choice, 2, 1);
 	if(choice==2)
@@ -306,12 +259,11 @@ void sellMed()
 	else
 	{
 		cout<<endl<<"Enter Medicine Serial Number to sell: ";
-		pinput(sellK, countMed()-1, 1); //countMed()-1 is used instead of countMed only - refer to the definition of countMed()
+		pinput(sellK, countMed()-1, 1);
 	}
 
-	//Show list item and price
 	f.open("Medicines.dat", ios::in | ios::binary);
-	f.seekg((sellK-1)*sizeof(med), ios::beg); //put read pointer of given s.no. list item
+	f.seekg((sellK-1)*sizeof(med), ios::beg);
 	f.read((char*) &med, sizeof(medicine));
 
 	cout<<"\nMedicine Found\n";
@@ -322,7 +274,6 @@ void sellMed()
 	pinput(sellQ, med.rQuantity(), 1);
 	cout<<endl<<"Cost (INR): "<<sellQ*med.rPrice();
 
-	//confirm
 	cout<<"\nConfirm? Yes(1) / No(0): ";
 	pinput(c, 1, 0);
 	if(!c)
@@ -332,7 +283,6 @@ void sellMed()
 		return;
 	}
 
-	//change-quantity-in-file
 	if(sellQ == med.rQuantity())
 	{
 		c = sellK;
@@ -372,7 +322,7 @@ void sellMed()
 
 		med.decQuantity(sellQ);
 		f.close();
-		//BUG
+		
 		f.open("Medicines.dat", ios::in |ios::out | ios::binary);
 		f.seekg((sellK-1)*sizeof(medicine), ios::beg);
 		f.write((char*) &med, sizeof(medicine));
@@ -385,7 +335,7 @@ void sellMed()
 
 	menuV();
 }
-void addMed() //addition
+void addMed()
 {
 	med.getDetails();
 	f.open("Medicines.dat", ios::app | ios::in | ios::binary);
@@ -394,11 +344,11 @@ void addMed() //addition
 
 	menuV();
 }
-void searchMed() //search by name
+void searchMed()
 {
 	char medN[20];
 	int flag=1;
-	cout<<"Enter name of Medicine to Seach: ";
+	cout<<"Enter name of Medicine to Search: ";
 	gets(medN);
 
 	f.open("Medicines.dat", ios::in | ios::binary);
@@ -420,7 +370,7 @@ void searchMed() //search by name
 
 	menuV();
 }
-void ovMed() //full overview
+void ovMed()
 {
 	cout<<"\nOVERVIEW:\n";
 	cout<<"TOTAL ITEMS\t\tTOTAL WORTH\t\tTOTAL STOCK\n";
@@ -438,32 +388,28 @@ void menuV()
 void menu()
 {
 	cout<<endl<<"Menu"<<endl;
-	//view choices
 	cout<<"1. Sell\n"<<"2. Add\n"<<"3. Remove\n"<<"4. Search\n"<<"5. Overview\n";
-	//select choice
 	cout<<endl<<"Enter Your Choice: ";
 	pinput(choice, 5, 1);
-	//execute
 	if(choice==1) sellMed();
 	else if(choice==2) addMed();
 	else if(choice==3) remMed();
 	else if(choice==4) searchMed();
-	else if(choice==5) //show medicine list
+	else if(choice==5)
 	{
 		ovMed();
 		showMed();
-		menuV(); //because showMed() can be called by other functions
-				//and menu cannot be shown everytime it is called
+		menuV();
 	}
 }
 
 int main()
 {
-	//remove("Medicines.dat");
 	cout<<"Welcome to Pharmacy Manager"<<endl;
+	cout<<"BY Shashank Sengar, 12th-C"<<endl;
 	menu();
 	cout<<"\nThank You For Using Pharmacy Manager\nPress Any Key to Exit...";
-	getchar(); //for pause before termination
+	getchar();
 	return 0;
 }
 
