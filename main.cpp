@@ -460,7 +460,7 @@ void menu()
 int main()
 {
 	//remove("Medicines.dat");
-	cout<<"Welcome to Pharmacy Manager"<<endl;
+	cout<<"Welcome to Om's Pharmacy Manager"<<endl;
 	menu();
 	cout<<"\nThank You For Using Pharmacy Manager\nPress Any Key to Exit...";
 	getchar(); //for pause before termination
